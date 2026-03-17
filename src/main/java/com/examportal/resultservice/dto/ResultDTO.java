@@ -11,6 +11,9 @@ public class ResultDTO {
     private String grade;
     private LocalDateTime evaluatedAt;
 
+    private String username;
+    private String examTitle;
+
     public String getUsername() {
         return username;
     }
@@ -26,9 +29,6 @@ public class ResultDTO {
     public void setExamTitle(String examTitle) {
         this.examTitle = examTitle;
     }
-
-    private String username;
-    private String examTitle;
 
     // getters setters
 

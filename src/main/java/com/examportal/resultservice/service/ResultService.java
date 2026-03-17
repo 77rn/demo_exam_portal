@@ -14,4 +14,6 @@ public interface ResultService {
 
     List<ResultDTO> getResultsByExamId(Long examId);
 
+    List<ResultDTO> getLeaderboardByExamId(Long examId);
+
 }

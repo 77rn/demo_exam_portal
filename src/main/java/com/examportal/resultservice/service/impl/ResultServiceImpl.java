@@ -8,7 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.examportal.resultservice.dto.ResultDTO;
 import com.examportal.resultservice.entity.Result;
+import com.examportal.resultservice.entity.User;
+import com.examportal.resultservice.entity.Exam;
 import com.examportal.resultservice.repository.ResultRepository;
+import com.examportal.resultservice.repository.UserRepository;
+import com.examportal.resultservice.repository.ExamRepository;
 import com.examportal.resultservice.service.ResultService;
 
 @Service
@@ -17,8 +21,13 @@ public class ResultServiceImpl implements ResultService {
     @Autowired
     private ResultRepository resultRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
-    // Entity → DTO conversion
+    @Autowired
+    private ExamRepository examRepository;
+
+
     private ResultDTO convertToDTO(Result result) {
 
         ResultDTO dto = new ResultDTO();
@@ -29,6 +38,24 @@ public class ResultServiceImpl implements ResultService {
         dto.setScore(result.getScore());
         dto.setGrade(result.getGrade());
         dto.setEvaluatedAt(result.getEvaluatedAt());
+
+
+        User user = userRepository
+                .findById(result.getUserId())
+                .orElse(null);
+
+        if (user != null) {
+            dto.setUsername(user.getUsername());
+        }
+
+
+        Exam exam = examRepository
+                .findById(result.getExamId())
+                .orElse(null);
+
+        if (exam != null) {
+            dto.setExamTitle(exam.getExamTitle());
+        }
 
         return dto;
     }
@@ -77,4 +104,14 @@ public class ResultServiceImpl implements ResultService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ResultDTO> getLeaderboardByExamId(Long examId) {
+
+        List<Result> results =
+                resultRepository.findByExamIdOrderByScoreDesc(examId);
+
+        return results.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }

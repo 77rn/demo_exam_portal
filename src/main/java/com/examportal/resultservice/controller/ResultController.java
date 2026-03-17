@@ -48,4 +48,10 @@ public class ResultController {
         return resultService.getResultsByExamId(examId);
     }
 
+    @GetMapping("/leaderboard/{examId}")
+    public List<ResultDTO> getLeaderboard(@PathVariable Long examId) {
+
+        return resultService.getLeaderboardByExamId(examId);
+    }
+
 }
