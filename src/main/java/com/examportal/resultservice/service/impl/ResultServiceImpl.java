@@ -6,13 +6,17 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.examportal.resultservice.dto.ResultDTO;
+import com.examportal.resultservice.dto.ResultResponseDTO;
+import com.examportal.resultservice.dto.LeaderboardDTO;
+
 import com.examportal.resultservice.entity.Result;
 import com.examportal.resultservice.entity.User;
-import com.examportal.resultservice.entity.Exam;
+import com.examportal.resultservice.entity.Exams;
+
 import com.examportal.resultservice.repository.ResultRepository;
 import com.examportal.resultservice.repository.UserRepository;
-import com.examportal.resultservice.repository.ExamRepository;
+import com.examportal.resultservice.repository.ExamsRepository;
+
 import com.examportal.resultservice.service.ResultService;
 
 @Service
@@ -25,12 +29,13 @@ public class ResultServiceImpl implements ResultService {
     private UserRepository userRepository;
 
     @Autowired
-    private ExamRepository examRepository;
+    private ExamsRepository examsRepository;
 
 
-    private ResultDTO convertToDTO(Result result) {
+    // ✅ convert to ResultResponseDTO
+    private ResultResponseDTO convertToDTO(Result result) {
 
-        ResultDTO dto = new ResultDTO();
+        ResultResponseDTO dto = new ResultResponseDTO();
 
         dto.setId(result.getId());
         dto.setExamId(result.getExamId());
@@ -39,19 +44,41 @@ public class ResultServiceImpl implements ResultService {
         dto.setGrade(result.getGrade());
         dto.setEvaluatedAt(result.getEvaluatedAt());
 
-
-        User user = userRepository
-                .findById(result.getUserId())
-                .orElse(null);
+        User user =
+                userRepository.findById(result.getUserId()).orElse(null);
 
         if (user != null) {
             dto.setUsername(user.getUsername());
         }
 
+        Exams exam =
+                examsRepository.findById(result.getExamId()).orElse(null);
 
-        Exam exam = examRepository
-                .findById(result.getExamId())
-                .orElse(null);
+        if (exam != null) {
+            dto.setExamTitle(exam.getExamTitle());
+        }
+
+        return dto;
+    }
+
+
+    // ✅ convert to LeaderboardDTO
+    private LeaderboardDTO convertToLeaderboardDTO(Result result) {
+
+        LeaderboardDTO dto = new LeaderboardDTO();
+
+        dto.setScore(result.getScore());
+        dto.setGrade(result.getGrade());
+
+        User user =
+                userRepository.findById(result.getUserId()).orElse(null);
+
+        if (user != null) {
+            dto.setUsername(user.getUsername());
+        }
+
+        Exams exam =
+                examsRepository.findById(result.getExamId()).orElse(null);
 
         if (exam != null) {
             dto.setExamTitle(exam.getExamTitle());
@@ -62,20 +89,20 @@ public class ResultServiceImpl implements ResultService {
 
 
     @Override
-    public List<ResultDTO> getAllResults() {
+    public List<ResultResponseDTO> getAllResults() {
 
-        List<Result> results = resultRepository.findAll();
-
-        return results.stream()
+        return resultRepository.findAll()
+                .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
 
     @Override
-    public ResultDTO getResultById(Long id) {
+    public ResultResponseDTO getResultById(Long id) {
 
-        Result result = resultRepository.findById(id).orElse(null);
+        Result result =
+                resultRepository.findById(id).orElse(null);
 
         if (result == null) return null;
 
@@ -84,34 +111,32 @@ public class ResultServiceImpl implements ResultService {
 
 
     @Override
-    public List<ResultDTO> getResultsByUserId(Long userId) {
+    public List<ResultResponseDTO> getResultsByUserId(Long userId) {
 
-        List<Result> results = resultRepository.findByUserId(userId);
-
-        return results.stream()
+        return resultRepository.findByUserId(userId)
+                .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
 
     @Override
-    public List<ResultDTO> getResultsByExamId(Long examId) {
+    public List<ResultResponseDTO> getResultsByExamId(Long examId) {
 
-        List<Result> results = resultRepository.findByExamId(examId);
-
-        return results.stream()
+        return resultRepository.findByExamId(examId)
+                .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<ResultDTO> getLeaderboardByExamId(Long examId) {
+    public List<LeaderboardDTO> getLeaderboardByExamId(Long examId) {
 
-        List<Result> results =
-                resultRepository.findByExamIdOrderByScoreDesc(examId);
-
-        return results.stream()
-                .map(this::convertToDTO)
+        return resultRepository
+                .findByExamIdOrderByScoreDesc(examId)
+                .stream()
+                .map(this::convertToLeaderboardDTO)
                 .collect(Collectors.toList());
     }
 }

@@ -1,24 +1,28 @@
 package com.examportal.resultservice.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "results")
+@Table(name="results")
 public class Result {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="exam_id")
     private Long examId;
 
+    @Column(name="user_id")
     private Long userId;
 
-    private Double score;
+    private Integer score;
 
     private String grade;
 
+    @Column(name="evaluated_at")
     private LocalDateTime evaluatedAt;
 
     public Long getId() {
@@ -45,11 +49,11 @@ public class Result {
         this.userId = userId;
     }
 
-    public Double getScore() {
+    public Integer getScore() {
         return score;
     }
 
-    public void setScore(Double score) {
+    public void setScore(Integer score) {
         this.score = score;
     }
 
@@ -68,5 +72,11 @@ public class Result {
     public void setEvaluatedAt(LocalDateTime evaluatedAt) {
         this.evaluatedAt = evaluatedAt;
     }
-// getters setters
+
+    @Override
+    public String toString() {
+        return "Result [id=" + id + ", examId=" + examId + ", userId=" + userId + ", score=" + score + ", grade="
+                + grade + ", evaluatedAt=" + evaluatedAt + "]";
+    }
+
 }

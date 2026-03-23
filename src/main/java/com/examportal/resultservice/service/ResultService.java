@@ -2,18 +2,19 @@ package com.examportal.resultservice.service;
 
 import java.util.List;
 
-import com.examportal.resultservice.dto.ResultDTO;
+import com.examportal.resultservice.dto.LeaderboardDTO;
+import com.examportal.resultservice.dto.ResultResponseDTO;
 
 public interface ResultService {
 
-    List<ResultDTO> getAllResults();
+    List<ResultResponseDTO> getAllResults();
 
-    ResultDTO getResultById(Long id);
+    ResultResponseDTO getResultById(Long id);
 
-    List<ResultDTO> getResultsByUserId(Long userId);
+    List<ResultResponseDTO> getResultsByUserId(Long userId);
 
-    List<ResultDTO> getResultsByExamId(Long examId);
+    List<ResultResponseDTO> getResultsByExamId(Long examId);
 
-    List<ResultDTO> getLeaderboardByExamId(Long examId);
+    List<LeaderboardDTO> getLeaderboardByExamId(Long examId);
 
 }
